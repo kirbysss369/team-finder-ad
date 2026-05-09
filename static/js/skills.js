@@ -1,22 +1,13 @@
-// Profile skills UI logic
+// Project skills UI logic for variant 3.
 (function(){
   document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("skills-container");
     if (!container) return;
 
     const projectId = container.dataset.projectId;
-    const userId = container.dataset.userId;
-
-    let skillsUrl, addUrl, removeUrl;
-    if (userId) {
-      skillsUrl = `/users/skills/`;
-      addUrl = `/users/${userId}/skills/add/`;
-      removeUrl = (skillId) => `/users/${userId}/skills/${skillId}/remove/`;
-    } else {
-      skillsUrl = `/projects/skills/`;
-      addUrl = `/projects/${projectId}/skills/add/`;
-      removeUrl = (skillId) => `/projects/${projectId}/skills/${skillId}/remove/`;
-    }
+    const skillsUrl = `/projects/skills/`;
+    const addUrl = `/projects/${projectId}/skills/add/`;
+    const removeUrl = (skillId) => `/projects/${projectId}/skills/${skillId}/remove/`;
 
     const addBtn = document.getElementById("add-skill-btn");
     const inputWrapper = document.getElementById("skill-input-wrapper");
@@ -159,7 +150,15 @@
       const chip = document.createElement("span");
       chip.className = "skill-chip";
       chip.dataset.id = id;
-      chip.innerHTML = `${name} <button type="button" class="remove-skill-btn" aria-label="Удалить" title="Удалить">×</button>`;
+      chip.innerHTML = `
+        ${name}
+        <button
+          type="button"
+          class="remove-skill-btn"
+          aria-label="Удалить"
+          title="Удалить"
+        >×</button>
+      `;
 
       container.insertBefore(chip, addBtn);
 

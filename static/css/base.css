@@ -46,16 +46,6 @@ button {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.favorite svg {
-  fill: red;
-  stroke: red;
-}
-
-.not-favorite svg {
-  fill: none;
-  stroke: #555555;
-}
-
 svg {
   width: 16px;
   height: 16px;

@@ -1,20 +1,24 @@
 from pathlib import Path
+
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# TODO: Создать и заполнить .env, ориентируясь на .env_example
+SECRET_KEY = config("DJANGO_SECRET_KEY", default="unsafe-dev-team-finder-key")
 
-SECRET_KEY = config("DJANGO_SECRET_KEY")
+DEBUG = config("DJANGO_DEBUG", default=True, cast=bool)
 
-DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config(
+    "DJANGO_ALLOWED_HOSTS",
+    default="localhost,127.0.0.1,testserver",
+).split(",")
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "users",
+    "projects",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -38,7 +42,7 @@ ROOT_URLCONF = "team_finder.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / f"templates_var{config('TASK_VERSION', default='1')}"],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -59,11 +63,11 @@ WSGI_APPLICATION = "team_finder.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("POSTGRES_DB"),
-        "USER": config("POSTGRES_USER"),
-        "PASSWORD": config("POSTGRES_PASSWORD"),
+        "NAME": config("POSTGRES_DB", default="team_finder"),
+        "USER": config("POSTGRES_USER", default="team_finder"),
+        "PASSWORD": config("POSTGRES_PASSWORD", default="team_finder"),
         "HOST": config("POSTGRES_HOST", default="localhost"),
-        "PORT": config("POSTGRES_PORT", default=5432, cast=int),
+        "PORT": config("POSTGRES_PORT", default=5436, cast=int),
     }
 }
 
@@ -73,21 +77,17 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = []
 if not DEBUG:
+    password_validators = [
+        "UserAttributeSimilarityValidator",
+        "MinimumLengthValidator",
+        "CommonPasswordValidator",
+        "NumericPasswordValidator",
+    ]
     AUTH_PASSWORD_VALIDATORS.extend(
-        [
-            {
-                "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-            },
-            {
-                "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-            },
-            {
-                "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-            },
-            {
-                "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-            },
-        ]
+        {
+            "NAME": f"django.contrib.auth.password_validation.{validator}",
+        }
+        for validator in password_validators
     )
 
 # Internationalization
@@ -95,7 +95,7 @@ if not DEBUG:
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Yekaterinburg"
 
 USE_I18N = True
 
@@ -111,6 +111,11 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+AUTH_USER_MODEL = "users.User"
+LOGIN_URL = "users:login"
+LOGIN_REDIRECT_URL = "projects:list"
+LOGOUT_REDIRECT_URL = "projects:list"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

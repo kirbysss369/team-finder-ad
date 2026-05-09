@@ -1,6 +1,6 @@
-// Global utilities
+// Global utilities.
 (function(){
-  // CSRF cookie utility
+  // CSRF cookie utility.
   if (!window.getCookie) {
     window.getCookie = function(name) {
       let cookieValue = null;
@@ -18,7 +18,7 @@
     }
   }
 
-  // Minimal toast notifications
+  // Minimal toast notifications.
   if (!window.toast) {
     function ensureContainer() {
       let c = document.getElementById('tf-toast-container');

@@ -1,4 +1,4 @@
-// Project-specific JS (complete project action + toggle participate)
+// Project-specific JS: complete project action and participation toggle.
 (function(){
   document.addEventListener("DOMContentLoaded", function() {
     const completeBtn = document.getElementById("complete-project-btn");
