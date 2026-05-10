@@ -12,8 +12,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 from core.constants import (
     AVATAR_BACKGROUND_COLORS,
-    AVATAR_FONT_SIZE,
     AVATAR_FONT_NAME,
+    AVATAR_FONT_SIZE,
     AVATAR_IMAGE_SIZE,
     AVATAR_TEXT_ANCHOR,
     AVATAR_TEXT_COLOR,

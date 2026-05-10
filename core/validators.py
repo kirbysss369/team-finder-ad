@@ -5,7 +5,6 @@ from django import forms
 
 from core.constants import GITHUB_HOSTS, PHONE_DIGITS_AFTER_PREFIX
 
-
 PHONE_RE = re.compile(rf"^(8|\+7)\d{{{PHONE_DIGITS_AFTER_PREFIX}}}$")
 
 

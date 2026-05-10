@@ -6,7 +6,6 @@ from django.core.management.base import BaseCommand, CommandError
 from projects.models import Project, Skill
 from users.models import User
 
-
 DEFAULT_DATA_PATH = Path(__file__).resolve().parents[2] / "fixtures" / "demo_data.json"
 
 

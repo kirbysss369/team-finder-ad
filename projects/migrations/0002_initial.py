@@ -18,21 +18,36 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='owner',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='owned_projects', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='owned_projects',
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
             model_name='project',
             name='participants',
-            field=models.ManyToManyField(blank=True, related_name='participated_projects', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='participated_projects',
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
             model_name='project',
             name='skills',
-            field=models.ManyToManyField(blank=True, related_name='projects', to='projects.skill'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='projects',
+                to='projects.skill',
+            ),
         ),
         migrations.AddIndex(
             model_name='project',
-            index=models.Index(fields=['-created_at'], name='projects_pr_created_775fe7_idx'),
+            index=models.Index(
+                fields=['-created_at'],
+                name='projects_pr_created_775fe7_idx',
+            ),
         ),
         migrations.AddIndex(
             model_name='project',
