@@ -2,6 +2,8 @@ from pathlib import Path
 
 from decouple import config
 
+from core.constants import DEFAULT_POSTGRES_PORT
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("DJANGO_SECRET_KEY", default="unsafe-dev-team-finder-key")
@@ -62,7 +64,7 @@ DATABASES = {
         "USER": config("POSTGRES_USER", default="team_finder"),
         "PASSWORD": config("POSTGRES_PASSWORD", default="team_finder"),
         "HOST": config("POSTGRES_HOST", default="localhost"),
-        "PORT": config("POSTGRES_PORT", default=5436, cast=int),
+        "PORT": config("POSTGRES_PORT", default=DEFAULT_POSTGRES_PORT, cast=int),
     }
 }
 

@@ -15,6 +15,7 @@ from core.constants import (
     AVATAR_FONT_NAME,
     AVATAR_FONT_SIZE,
     AVATAR_IMAGE_SIZE,
+    AVATAR_LETTER_LENGTH,
     AVATAR_TEXT_ANCHOR,
     AVATAR_TEXT_COLOR,
     AVATAR_TEXT_Y_OFFSET,
@@ -84,7 +85,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         # Цвет зависит от данных пользователя, поэтому демо-аватары не скачут.
         seed = sum(ord(char) for char in (self.email or self.name or "u"))
         background = AVATAR_BACKGROUND_COLORS[seed % len(AVATAR_BACKGROUND_COLORS)]
-        letter = (self.name[:1] or self.email[:1] or "U").upper()
+        letter = (
+            self.name[:AVATAR_LETTER_LENGTH]
+            or self.email[:AVATAR_LETTER_LENGTH]
+            or "U"
+        ).upper()
 
         image = Image.new("RGB", (AVATAR_IMAGE_SIZE, AVATAR_IMAGE_SIZE), background)
         draw = ImageDraw.Draw(image)
