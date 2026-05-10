@@ -1,39 +1,10 @@
-import re
-from urllib.parse import urlparse
-
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import PasswordChangeForm
 
-from .models import User
-
-
-PHONE_RE = re.compile(r"^(8|\+7)\d{10}$")
-
-
-def validate_github_url(value):
-    if not value:
-        return value
-
-    host = urlparse(value).netloc.lower()
-    if host not in {"github.com", "www.github.com"}:
-        raise forms.ValidationError("Ссылка должна вести на GitHub.")
-    return value
-
-
-def normalize_phone(value):
-    value = (value or "").strip()
-    if not value:
-        return None
-
-    if not PHONE_RE.match(value):
-        raise forms.ValidationError(
-            "Телефон должен быть в формате 8XXXXXXXXXX или +7XXXXXXXXXX."
-        )
-
-    if value.startswith("8"):
-        return "+7" + value[1:]
-    return value
+from core.mixins import GithubUrlValidationMixin
+from core.validators import normalize_phone
+from users.models import User
 
 
 class RegistrationForm(forms.ModelForm):
@@ -92,7 +63,7 @@ class LoginForm(forms.Form):
         return self.user
 
 
-class ProfileForm(forms.ModelForm):
+class ProfileForm(GithubUrlValidationMixin, forms.ModelForm):
     class Meta:
         model = User
         fields = ["name", "surname", "avatar", "about", "phone", "github_url"]
@@ -122,9 +93,6 @@ class ProfileForm(forms.ModelForm):
         if duplicate.exists():
             raise forms.ValidationError("Такой номер телефона уже используется.")
         return phone
-
-    def clean_github_url(self):
-        return validate_github_url(self.cleaned_data.get("github_url"))
 
 
 class UserPasswordChangeForm(PasswordChangeForm):

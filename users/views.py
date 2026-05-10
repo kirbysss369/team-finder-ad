@@ -4,30 +4,35 @@ from django.contrib.auth import (
     update_session_auth_hash,
 )
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import LoginForm, ProfileForm, RegistrationForm, UserPasswordChangeForm
-from .models import User
+from core.constants import PARTICIPANTS_PER_PAGE
+from core.services import paginate_queryset, query_prefix
+from users.forms import (
+    LoginForm,
+    ProfileForm,
+    RegistrationForm,
+    UserPasswordChangeForm,
+)
+from users.services import participant_queryset, profile_queryset
 
 
 def participant_list(request):
-    participants = User.objects.filter(is_active=True).order_by("-id")
-    page_obj = Paginator(participants, 12).get_page(request.GET.get("page"))
+    participants = participant_queryset()
     return render(
         request,
         "users/participants.html",
         {
             "participants": participants,
-            "page_obj": page_obj,
-            "query_prefix": _query_prefix(request),
+            "page_obj": paginate_queryset(request, participants, PARTICIPANTS_PER_PAGE),
+            "query_prefix": query_prefix(request),
         },
     )
 
 
 def user_detail(request, pk):
     profile_user = get_object_or_404(
-        User.objects.prefetch_related("owned_projects__participants"),
+        profile_queryset(),
         pk=pk,
         is_active=True,
     )
@@ -36,7 +41,7 @@ def user_detail(request, pk):
 
 def register(request):
     form = RegistrationForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
+    if form.is_valid():
         user = form.save()
         auth_login(request, user)
         return redirect("projects:list")
@@ -45,7 +50,7 @@ def register(request):
 
 def login(request):
     form = LoginForm(request, data=request.POST or None)
-    if request.method == "POST" and form.is_valid():
+    if form.is_valid():
         auth_login(request, form.get_user())
         return redirect("projects:list")
     return render(request, "users/login.html", {"form": form})
@@ -63,7 +68,7 @@ def edit_profile(request):
         request.FILES or None,
         instance=request.user,
     )
-    if request.method == "POST" and form.is_valid():
+    if form.is_valid():
         form.save()
         return redirect("users:detail", pk=request.user.pk)
     return render(request, "users/edit_profile.html", {"form": form})
@@ -72,15 +77,8 @@ def edit_profile(request):
 @login_required
 def change_password(request):
     form = UserPasswordChangeForm(request.user, request.POST or None)
-    if request.method == "POST" and form.is_valid():
+    if form.is_valid():
         user = form.save()
         update_session_auth_hash(request, user)
         return redirect("users:detail", pk=user.pk)
     return render(request, "users/change_password.html", {"form": form})
-
-
-def _query_prefix(request):
-    params = request.GET.copy()
-    params.pop("page", None)
-    encoded = params.urlencode()
-    return f"{encoded}&" if encoded else ""

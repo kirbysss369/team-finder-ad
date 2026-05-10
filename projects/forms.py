@@ -1,11 +1,10 @@
 from django import forms
 
-from users.forms import validate_github_url
+from core.mixins import GithubUrlValidationMixin
+from projects.models import Project
 
-from .models import Project
 
-
-class ProjectForm(forms.ModelForm):
+class ProjectForm(GithubUrlValidationMixin, forms.ModelForm):
     class Meta:
         model = Project
         fields = ["name", "description", "github_url", "status"]
@@ -18,6 +17,3 @@ class ProjectForm(forms.ModelForm):
         widgets = {
             "description": forms.Textarea(attrs={"rows": 6}),
         }
-
-    def clean_github_url(self):
-        return validate_github_url(self.cleaned_data.get("github_url"))

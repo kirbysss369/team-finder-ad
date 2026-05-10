@@ -3,7 +3,6 @@ from uuid import uuid4
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    BaseUserManager,
     PermissionsMixin,
 )
 from django.core.files.base import ContentFile
@@ -11,39 +10,36 @@ from django.db import models
 from django.utils import timezone
 from PIL import Image, ImageDraw, ImageFont
 
-
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError("Email is required")
-
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("is_active", True)
-
-        if extra_fields.get("is_staff") is not True:
-            raise ValueError("Superuser must have is_staff=True")
-        if extra_fields.get("is_superuser") is not True:
-            raise ValueError("Superuser must have is_superuser=True")
-
-        return self.create_user(email, password, **extra_fields)
+from core.constants import (
+    AVATAR_BACKGROUND_COLORS,
+    AVATAR_FONT_SIZE,
+    AVATAR_FONT_NAME,
+    AVATAR_IMAGE_SIZE,
+    AVATAR_TEXT_ANCHOR,
+    AVATAR_TEXT_COLOR,
+    AVATAR_TEXT_Y_OFFSET,
+    PHONE_LOCAL_LENGTH,
+    PHONE_MAX_LENGTH,
+    USER_ABOUT_MAX_LENGTH,
+    USER_NAME_MAX_LENGTH,
+    USER_SURNAME_MAX_LENGTH,
+)
+from users.managers import UserManager
 
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    name = models.CharField(max_length=124)
-    surname = models.CharField(max_length=124)
+    name = models.CharField(max_length=USER_NAME_MAX_LENGTH)
+    surname = models.CharField(max_length=USER_SURNAME_MAX_LENGTH)
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
-    phone = models.CharField(max_length=12, blank=True, null=True, unique=True)
+    phone = models.CharField(
+        max_length=PHONE_MAX_LENGTH,
+        blank=True,
+        null=True,
+        unique=True,
+    )
     github_url = models.URLField(blank=True)
-    about = models.TextField(max_length=256, blank=True)
+    about = models.TextField(max_length=USER_ABOUT_MAX_LENGTH, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -68,7 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if (
             self.phone
             and self.phone.startswith("8")
-            and len(self.phone) == 11
+            and len(self.phone) == PHONE_LOCAL_LENGTH
             and self.phone.isdigit()
         ):
             self.phone = "+7" + self.phone[1:]
@@ -86,29 +82,24 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def _generate_avatar(self):
         # Цвет зависит от данных пользователя, поэтому демо-аватары не скачут.
-        colors = [
-            "#6B8EAD",
-            "#7A9E7E",
-            "#B08968",
-            "#8D6A9F",
-            "#5F8D8B",
-            "#A87C7C",
-        ]
         seed = sum(ord(char) for char in (self.email or self.name or "u"))
-        background = colors[seed % len(colors)]
+        background = AVATAR_BACKGROUND_COLORS[seed % len(AVATAR_BACKGROUND_COLORS)]
         letter = (self.name[:1] or self.email[:1] or "U").upper()
 
-        image = Image.new("RGB", (256, 256), background)
+        image = Image.new("RGB", (AVATAR_IMAGE_SIZE, AVATAR_IMAGE_SIZE), background)
         draw = ImageDraw.Draw(image)
         try:
-            font = ImageFont.truetype("DejaVuSans-Bold.ttf", 120)
+            font = ImageFont.truetype(AVATAR_FONT_NAME, AVATAR_FONT_SIZE)
         except OSError:
             font = ImageFont.load_default()
 
-        bbox = draw.textbbox((0, 0), letter, font=font)
-        x = (256 - (bbox[2] - bbox[0])) / 2
-        y = (256 - (bbox[3] - bbox[1])) / 2 - 10
-        draw.text((x, y), letter, fill="#FFFFFF", font=font)
+        bbox = draw.textbbox(AVATAR_TEXT_ANCHOR, letter, font=font)
+        x = (AVATAR_IMAGE_SIZE - (bbox[2] - bbox[0])) / 2
+        y = (
+            (AVATAR_IMAGE_SIZE - (bbox[3] - bbox[1])) / 2
+            - AVATAR_TEXT_Y_OFFSET
+        )
+        draw.text((x, y), letter, fill=AVATAR_TEXT_COLOR, font=font)
 
         buffer = BytesIO()
         image.save(buffer, format="PNG")

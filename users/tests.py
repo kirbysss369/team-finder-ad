@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from .forms import ProfileForm
-from .models import User
+from users.forms import ProfileForm
+from users.models import User
 
 
 class UserAuthTests(TestCase):

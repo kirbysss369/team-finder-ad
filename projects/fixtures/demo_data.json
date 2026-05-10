@@ -1,0 +1,65 @@
+{
+  "users": [
+    {
+      "email": "maria@yandex.ru",
+      "password": "password",
+      "name": "Мария",
+      "surname": "Иванова",
+      "phone": "+79000000001",
+      "github_url": "https://github.com/maria",
+      "about": "Backend-разработчик, люблю аккуратные API и pet-проекты."
+    },
+    {
+      "email": "alex@example.com",
+      "password": "password",
+      "name": "Алексей",
+      "surname": "Петров",
+      "phone": "+79000000002",
+      "github_url": "https://github.com/alex",
+      "about": "Frontend-разработчик, собираю удобные интерфейсы."
+    },
+    {
+      "email": "olga@example.com",
+      "password": "password",
+      "name": "Ольга",
+      "surname": "Смирнова",
+      "phone": "+79000000003",
+      "github_url": "https://github.com/olga",
+      "about": "Дизайнер продукта и исследователь пользовательских сценариев."
+    }
+  ],
+  "skills": [
+    "Django",
+    "PostgreSQL",
+    "JavaScript",
+    "UI/UX",
+    "Docker",
+    "REST API"
+  ],
+  "projects": [
+    {
+      "owner_email": "maria@yandex.ru",
+      "name": "API для книжного клуба",
+      "description": "Сервис для обсуждения книг, списков чтения и рекомендаций.",
+      "github_url": "https://github.com/maria/book-club-api",
+      "status": "open",
+      "skills": ["Django", "PostgreSQL", "REST API"]
+    },
+    {
+      "owner_email": "alex@example.com",
+      "name": "Планировщик учебных спринтов",
+      "description": "Инструмент для командного планирования небольших учебных проектов.",
+      "github_url": "https://github.com/alex/sprint-planner",
+      "status": "open",
+      "skills": ["JavaScript", "Django", "Docker"]
+    },
+    {
+      "owner_email": "olga@example.com",
+      "name": "Каталог дизайн-референсов",
+      "description": "Коллекция UI-паттернов с тегами, заметками и командной модерацией.",
+      "github_url": "https://github.com/olga/design-library",
+      "status": "open",
+      "skills": ["UI/UX", "JavaScript"]
+    }
+  ]
+}

@@ -70,6 +70,13 @@ password: password
 Команду `seed_demo` можно запускать повторно. Она не создаёт дубли пользователей,
 проектов и навыков.
 
+Демо-набор хранится в `projects/fixtures/demo_data.json`. Если нужно проверить
+другие данные, можно передать свой JSON-файл:
+
+```bash
+python manage.py seed_demo --data-file path/to/demo_data.json
+```
+
 ## Проверка
 
 ```bash
@@ -99,3 +106,8 @@ python manage.py test
 - `requirements.txt` сохранён в UTF-8.
 - `psycopg2-binary` закреплён на `2.9.12`: эта версия ставится готовым wheel
   на Python 3.14 и не требует локальный `pg_config`.
+
+## Контакты
+
+- GitHub: [kirbysss369](https://github.com/kirbysss369)
+- Email: [tretiakpavel13@gmail.com](mailto:tretiakpavel13@gmail.com)
